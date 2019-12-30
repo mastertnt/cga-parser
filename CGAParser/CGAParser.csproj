@@ -46,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AArgument.cs" />
+    <Compile Include="Comp.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Enum.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Float.cs" />
     <Compile Include="Extrude.cs" />
@@ -53,6 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rule.cs" />
     <Compile Include="Script.cs" />
+    <Compile Include="Variable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

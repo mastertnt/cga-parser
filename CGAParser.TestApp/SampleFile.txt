@@ -1,2 +1,3 @@
-﻿Lot  --> extrude(10) Envelope
-Envelope --> split(y) { ~2.5: Floor }*
+﻿Lot -->extrude(10) Envelope
+Lot1-->extrude(face.normal,10)
+Building --> comp(f){ front : FrontFacade | side : SideFacade | top: Roof}

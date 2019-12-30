@@ -10,29 +10,32 @@ namespace CGAParser
     /// </summary>
     public class Rule
     {
-        /// <summary>
-        /// Parser for an identifier (non-spaced, non-quoted).
-        /// </summary>
-        public static readonly Parser<string> IDENTIFIER_PARSER =
-            from lFirstLetter in Parse.Letter.Once()
-            from lRest in Parse.LetterOrDigit.Many()
-            select new string(lFirstLetter.Concat(lRest).ToArray());
-
-        public static readonly Parser<IEnumerable<Operation>> OPERATION_PARSERS = Operation.PARSER_WITH_ARGS.DelimitedBy(Sprache.Parse.Char(' ').Token());
+        public static readonly Parser<Operation> OPERATION_PARSERS = Extrude.PARSER.Or(Operation.PARSER_WITH_ARGS);
 
 
         public static readonly Parser<Rule> RULE_PARSER =
-            from lPredecessor in IDENTIFIER_PARSER
-            from lWhiteSpace1 in Parse.WhiteSpace.Many()
+            from lPredecessor in Common.IDENTIFIER_PARSER
+            from lWhiteSpace1 in Common.SPACE.Many()
             from lSeparator in Sprache.Parse.String("-->")
-            from lWhiteSpace2 in Parse.WhiteSpace.Many()
+            from lWhiteSpace2 in Common.SPACE.Many()
             from lOperations in OPERATION_PARSERS
-            select new Rule(lPredecessor, lOperations);
+            from lWhiteSpace3 in Common.SPACE.Many()
+            from lSuccessor in Common.IDENTIFIER_PARSER.Optional()
+            select new Rule(lPredecessor, new List<Operation>() { lOperations }, lSuccessor.IsDefined ? lSuccessor.Get() : "");
 
         /// <summary>
-        /// Gets the identifier of a functions.
+        /// Gets the identifier of a rule.
         /// </summary>
         public string Identifier
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets the successor of a rule.
+        /// </summary>
+        public string Successor
         {
             get;
             private set;
@@ -51,11 +54,13 @@ namespace CGAParser
         /// Default constructor for Rule.
         /// </summary>
         /// <param name="pIdentifier">The rule identifier.</param>
-        /// <param name="pBody">The rule body.</param>
-        public Rule(string pIdentifier, IEnumerable<Operation> pOperations)
+        /// <param name="pOperations">The operations.</param>
+        /// /// <param name="pSuccessor">The successor identifier (if any).</param>
+        public Rule(string pIdentifier, IEnumerable<Operation> pOperations, string pSuccessor)
         {
             this.Identifier = pIdentifier;
             this.Operations = pOperations;
+            this.Successor = pSuccessor;
         }
 
         public override string ToString()
@@ -65,8 +70,13 @@ namespace CGAParser
             lBuilder.Append("-->");
             foreach (var lOperation in this.Operations)
             {
-                lBuilder.Append(lOperation.ToString());
+                lBuilder.Append(lOperation);
                 lBuilder.Append(' ');
+            }
+
+            if (string.IsNullOrWhiteSpace(this.Successor) == false)
+            {
+                lBuilder.Append(this.Successor);
             }
             
             return lBuilder.ToString();

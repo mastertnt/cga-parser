@@ -5,21 +5,19 @@ using Sprache;
 namespace CGAParser
 {
     /// <summary>
-    /// A script is a set of functions separated by ";"
+    /// A script is a set of rules separated by end of line.
     /// </summary>
     public class Script
     {
         /// <summary>
-        /// Retrieves a list of functions separated by ";"
+        /// Retrieves a list of functions separated by end of line
         /// </summary>
-        public static readonly Parser<IEnumerable<Rule>> RULE_PARSERS = Rule.RULE_PARSER.DelimitedBy(Parse.LineEnd.Token());
+        public static readonly Parser<IEnumerable<Rule>> RULE_PARSERS = Rule.RULE_PARSER.DelimitedBy(Parse.LineTerminator);
 
         /// <summary>
         /// Main parser.
         /// </summary>
-        public static readonly Parser<Script> PARSER =
-            from lRules in RULE_PARSERS
-            select new Script(lRules);
+        public static readonly Parser<Script> PARSER = from lRules in RULE_PARSERS select new Script(lRules);
 
         /// <summary>
         /// Gets the list of functions.

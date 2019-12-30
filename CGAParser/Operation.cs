@@ -14,17 +14,9 @@ namespace CGAParser
     public class Operation
     {
         /// <summary>
-        /// Parser for an identifier (non-spaced, non-quoted).
-        /// </summary>
-        public static readonly Parser<string> IDENTIFIER_PARSER =
-            from lFirstLetter in Parse.Letter.Once()
-            from lRest in Parse.LetterOrDigit.Many()
-            select new string(lFirstLetter.Concat(lRest).ToArray());
-
-        /// <summary>
         /// Parser for a list of argument (non-spaced, non-quoted).
         /// </summary>
-        public static readonly Parser<AArgument> ARGUMENT_PARSER = Float.PARSER;
+        public static readonly Parser<AArgument> ARGUMENT_PARSER = Float.PARSER.Or(Variable.PARSER);
 
         /// <summary>
         /// Parser for an argument (non-spaced, non-quoted).
@@ -35,11 +27,18 @@ namespace CGAParser
         /// Parser for  a function with arguments.
         /// </summary>
         public static readonly Parser<Operation> PARSER_WITH_ARGS =
-            from lIdentifier in IDENTIFIER_PARSER
+            from lIdentifier in Common.IDENTIFIER_PARSER
+            from lWhiteSpace0 in Common.SPACE.Many()
             from lOpenParenthesis in Sprache.Parse.Char('(')
-            from lArguments in ARGUMENT_PARSERS
+            from lWhiteSpace1 in Common.SPACE.Many()
+            from lArguments in ARGUMENT_PARSERS.Optional()
+            from lWhiteSpace2 in Common.SPACE.Many()
             from lCloseParenthesis in Sprache.Parse.Char(')')
-            select new Operation(lIdentifier, lArguments.ToArray());
+            //from lWhiteSpace3 inCommon.SPACE.Many()
+            //from lOpenBracket in Sprache.Parse.Char('{').Optional()
+            //from lCloseBracket in Sprache.Parse.Char('}').Optional()
+            //from lWhiteSpace4 inCommon.SPACE.Many()
+            select new Operation(lIdentifier, lArguments.IsDefined ? lArguments.Get() : null);
 
         public string Identifier
         {
@@ -70,11 +69,16 @@ namespace CGAParser
         public override string ToString()
         {
             StringBuilder lBuilder = new StringBuilder();
+            //lBuilder.AppendLine("==> " +  this.GetType().Name);
             lBuilder.Append(this.Identifier);
             lBuilder.Append("(");
-            foreach (var lArgument in this.Arguments)
+            for (int lIndex = 0; lIndex < this.Arguments.Count(); lIndex++)
             {
-                lBuilder.Append(lArgument.ToString());
+                lBuilder.Append(this.Arguments.ElementAt(lIndex));
+                if (lIndex != (this.Arguments.Count() - 1))
+                {
+                    lBuilder.Append(",");
+                }
             }
             lBuilder.Append(")");
             return lBuilder.ToString();
