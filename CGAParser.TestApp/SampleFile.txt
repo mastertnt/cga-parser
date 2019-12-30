@@ -1,0 +1,2 @@
+﻿Lot  --> extrude(10) Envelope
+Envelope --> split(y) { ~2.5: Floor }*
