@@ -19,7 +19,7 @@ namespace CGAParser
         /// <summary>
         /// Main parser for real.
         /// </summary>
-        public static readonly Parser<AArgument> PARSER =
+        public static readonly Parser<Float> PARSER =
             from lInteger in Integer.PARSER
             from lFractional in FRACTIONAL.Optional()
             select new Float(lInteger.TypedValue + (lFractional.IsDefined ? lFractional.Get() : ""));
@@ -31,14 +31,14 @@ namespace CGAParser
         {
             get
             {
-                return this.DoubleTypedValue;
+                return this.TypedValue;
             }
         }
 
         /// <summary>
         /// Gets the typed value.
         /// </summary>
-        public double? DoubleTypedValue
+        public float TypedValue
         {
             get;
             private set;
@@ -47,26 +47,35 @@ namespace CGAParser
         /// <summary>
         /// Default constructor.
         /// </summary>
-        /// <param name="pValue">The boolean value as string.</param>
+        /// <param name="pValue">The float value.</param>
+        public Float(float pValue)
+        {
+            this.TypedValue = pValue;
+        }
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="pValue">The float value as string.</param>
         public Float(string pValue)
         {
             int lIntValue;
             if (int.TryParse(pValue, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out lIntValue))
             {
-                this.DoubleTypedValue = lIntValue;
+                this.TypedValue = lIntValue;
             }
             else
             {
-                double lValue;
-                double.TryParse(pValue, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out lValue);
-                this.DoubleTypedValue = lValue;
+                float lValue;
+                float.TryParse(pValue, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out lValue);
+                this.TypedValue = lValue;
             }
         }
 
         public override string ToString()
         {
             StringBuilder lBuilder = new StringBuilder();
-            lBuilder.Append(this.DoubleTypedValue);
+            lBuilder.Append(this.TypedValue);
             return lBuilder.ToString();
         }
     }

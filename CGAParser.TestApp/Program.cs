@@ -13,10 +13,14 @@ namespace CGAParser.TestApp
     {
         static void Main(string[] pArgs)
         {
-            var lParseResult = Script.PARSER.TryParse(File.ReadAllText("SampleFile.txt"));
+            string lValue = File.ReadAllText("SampleFile.txt");
+            lValue = lValue.Replace("\r\n", "\n");
+            // lValue = "Lot  --> extrude(10) Envelope\nEnvelope --> split(y)";
+            Console.WriteLine(lValue);
+            var lParseResult = Script.PARSER.TryParse(lValue);
             if (lParseResult.WasSuccessful)
             {
-                Console.WriteLine(lParseResult);
+                Console.WriteLine(lParseResult.Value);
             }
             else
             {
