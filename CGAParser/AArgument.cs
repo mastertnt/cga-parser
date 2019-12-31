@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CGAParser
+﻿namespace CGAParser
 {
     /// <summary>
     /// This class represents an argument of a operation.

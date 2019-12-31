@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using CGACompute;
 using Sprache;
 
 namespace CGAParser.TestApp
@@ -13,18 +14,22 @@ namespace CGAParser.TestApp
     {
         static void Main(string[] pArgs)
         {
-            string lValue = File.ReadAllText("SampleFile.txt");
-            lValue = lValue.Replace("\r\n", "\n");
-            // lValue = "Lot  --> extrude(10) Envelope\nEnvelope --> split(y)";
-            Console.WriteLine(lValue);
-            var lParseResult = Script.PARSER.TryParse(lValue);
-            if (lParseResult.WasSuccessful)
+            if (pArgs.Length == 2 && pArgs[0] == "compute")
             {
-                Console.WriteLine(lParseResult.Value);
+                Compiler lCompiler = new Compiler();
+                lCompiler.Compile(new FileInfo(pArgs[1]), new Context(), new FileInfo(""));
             }
-            else
+            else if (pArgs.Length == 1)
             {
-                Console.WriteLine(lParseResult.Message);
+                Console.WriteLine("Try parse on " + pArgs[0]);
+                Compiler lCompiler = new Compiler();
+                lCompiler.Compile(new FileInfo(pArgs[0]), new Context(), new FileInfo(""));
+            }
+            else if (pArgs.Length == 1)
+            {
+                Console.WriteLine("Try parse on SampleFile.txt");
+                Compiler lCompiler = new Compiler();
+                lCompiler.Compile(new FileInfo("SampleFile.txt"), new Context(), new FileInfo(""));
             }
         }
     }
