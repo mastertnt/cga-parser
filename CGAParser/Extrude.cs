@@ -76,18 +76,38 @@ namespace CGAParser
         public static readonly Parser<Extrude> PARSER = Extrude.PARSER_1.Or(Extrude.PARSER_2);
 
         /// <summary>
+        /// Distance of the extrusion.
+        /// </summary>
+        public float Distance
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Type of the extrusion.
+        /// </summary>
+        public ExtrusionType ExtrusionType
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Default constructor.
         /// </summary>
         public Extrude(float pDistance)
         :base("extrude", new List<AArgument> () { new Float(pDistance)} )
         {
-
+            this.ExtrusionType = ExtrusionType.World_Up;
+            this.Distance = pDistance;
         }
 
         public Extrude(ExtrusionType pExtrusionType, float pDistance)
             : base("extrude", new List<AArgument> () {new Enumeration<ExtrusionType>(pExtrusionType), new Float(pDistance)} )
         {
-
+            this.ExtrusionType = pExtrusionType;
+            this.Distance = pDistance;
         }
     }
 }

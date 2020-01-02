@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SharpDX.DXGI;
 using SharpDX;
-using SharpDX.Direct3D12;
 
 
 namespace CGACompute
@@ -13,7 +8,7 @@ namespace CGACompute
     /// <summary>
     /// This class represents a polygon.
     /// </summary>
-    public class Polygon : ICloneable
+    public class Polygon : Shape, ICloneable
     {
         /// <summary>
         /// Gets the normal.
@@ -51,7 +46,7 @@ namespace CGACompute
             Polygon lClone = new Polygon();
             foreach (Vector3 lVertex in this.Vertices)
             {
-                lClone.Vertices.Add(new Vector3(lVertex.X, lVertex.Y, lVertex.Y));
+                lClone.Vertices.Add(new Vector3(lVertex.X, lVertex.Y, lVertex.Z));
             }
             lClone.Normal = this.Normal;
             return lClone;

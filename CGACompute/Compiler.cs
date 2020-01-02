@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using CGACompute.Factories;
 using CGAParser;
+using Newtonsoft.Json;
 using Sprache;
 
 namespace CGACompute
@@ -15,8 +13,14 @@ namespace CGACompute
     /// </summary>
     public class Compiler
     {
+        public Dictionary<Type, IAlgorithmFactory> mAlgorithms = new Dictionary<Type, IAlgorithmFactory>();
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public Compiler()
         {
+            this.mAlgorithms.Add(typeof(CGAParser.Extrude), new ExtrudeFactory());
         }
 
         /// <summary>
@@ -32,7 +36,29 @@ namespace CGACompute
             var lParseResult = Script.PARSER.TryParse(lValue);
             if (lParseResult.WasSuccessful)
             {
-                Console.WriteLine(lParseResult.Value);
+                int lIndex = 0;
+                foreach (Rule lRule in lParseResult.Value.Rules)
+                {
+                    Console.WriteLine("Try to apply rule : " + lRule);
+                    foreach (Operation lOperation in lRule.Operations)
+                    {
+                        IAlgorithmFactory lAlgorithmType;
+                        if (this.mAlgorithms.TryGetValue(lOperation.GetType(), out lAlgorithmType))
+                        {
+                            Console.WriteLine("Run algorithm");
+                            IGenericAlgorithm lAlgorithm = lAlgorithmType.Create(lOperation);
+                            Shape lResultShape = lAlgorithm.Compute(pBaseContext.GetVariable(lRule.Identifier));
+                            if (string.IsNullOrWhiteSpace(lRule.Successor) == false)
+                            {
+                                pBaseContext.SetVariable(lRule.Successor, lResultShape);
+                                string lJson = JsonConvert.SerializeObject(lResultShape);
+                                File.WriteAllText(lAlgorithm.GetType().Name + "_" + lIndex + "_result.json", lJson);
+                                lIndex++;
+                            }
+                        }
+                    }
+                    
+                }
             }
             else
             {

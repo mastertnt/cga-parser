@@ -55,7 +55,7 @@ namespace CGAParser
         /// <summary>
         /// Default constructor.
         /// </summary>
-        /// <param name="pIdentifier">the idenfiier of the function.</param>
+        /// <param name="pIdentifier">the identifier of the function.</param>
         /// <param name="pArguments">The arguments.</param>
         public Operation(string pIdentifier, IEnumerable<AArgument> pArguments)
         {

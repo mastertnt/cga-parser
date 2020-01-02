@@ -1,4 +1,5 @@
-﻿using CGAParser;
+﻿using System;
+using CGAParser;
 using SharpDX;
 
 namespace CGACompute
@@ -6,7 +7,7 @@ namespace CGACompute
     /// <summary>
     /// Extrude algorithm.
     /// </summary>
-    public class Extrude : Algorithm<Polygon, Geometry>
+    public class Extrude : IAlgorithm<Polygon, Geometry>
     {
         /// <summary>
         /// Distance of extrusion.
@@ -37,6 +38,11 @@ namespace CGACompute
             this.ExtrusionType = pExtrusionType;
         }
 
+        public Shape Compute(Shape pSource)
+        {
+            return this.Compute(pSource as Polygon);
+        }
+
         /// <summary>
         /// This method computes the geometry based on the incoming polygon.
         /// </summary>
@@ -54,7 +60,23 @@ namespace CGACompute
                     Polygon lTop = new Polygon();
                     foreach (Vector3 lVertex in lBase.Vertices)
                     {
-                        lTop.Vertices.Add(new Vector3(lVertex.X, lVertex.Y + this.Distance, lVertex.Y));
+                        lTop.Vertices.Add(new Vector3(lVertex.X, lVertex.Y + this.Distance, lVertex.Z));
+                    }
+                    lTop.Normal = lBase.Normal;
+                    lResult.Polygons.Add(lBase);
+                    lResult.Polygons.Add(lTop);
+                    
+
+                    // Now, create all other polygons.
+                    for (int lIndex = 0; lIndex < lBase.Vertices.Count; lIndex++)
+                    {
+                        int lNext = (lIndex + 1) % (lBase.Vertices.Count - 1);
+                        Polygon lSide = new Polygon();
+                        lSide.Vertices.Add(new Vector3(lBase.Vertices[lIndex].X, lBase.Vertices[lIndex].Y, lBase.Vertices[lIndex].Z));
+                        lSide.Vertices.Add(new Vector3(lBase.Vertices[lNext].X, lBase.Vertices[lNext].Y, lBase.Vertices[lNext].Z));
+                        lSide.Vertices.Add(new Vector3(lTop.Vertices[lNext].X, lTop.Vertices[lNext].Y, lTop.Vertices[lNext].Z));
+                        lSide.Vertices.Add(new Vector3(lTop.Vertices[lIndex].X, lTop.Vertices[lIndex].Y, lTop.Vertices[lIndex].Z));
+                        lResult.Polygons.Add(lSide);
                     }
 
                     lTop.Normal = lBase.Normal;
@@ -63,21 +85,18 @@ namespace CGACompute
 
                 case ExtrusionType.Face_Normal:
                 {
-
+                    throw new NotSupportedException();
                 }
-                    break;
-
+  
                 case ExtrusionType.Vertex_Normal:
                 {
-
+                    throw new NotSupportedException();
                 }
-                    break;
 
                 case ExtrusionType.WorldUp_FlatTop:
                 {
-
+                    throw new NotSupportedException();
                 }
-                    break;
             }
 
             return lResult;

@@ -5,7 +5,7 @@ namespace CGACompute
     /// <summary>
     /// This class represents tha base class for all geometries.
     /// </summary>
-    public class Geometry
+    public class Geometry : Shape
     {
         public List<Polygon> Polygons { get; }
 
